@@ -28,6 +28,7 @@ public class Arena {
     private Location startLocation;
     private Location spectLocation;
     private String name;
+    private String boardFooter;
     private ArrayList<UUID> players = new ArrayList<>();
     private ArrayList<UUID> tntPlayers = new ArrayList<>();
     private ArrayList<UUID> alivePlayers = new ArrayList<>();
@@ -156,15 +157,19 @@ public class Arena {
         this.seconds = seconds;
     }
     
+    public void setBoardFooter(String boardFooter) {
+        this.boardFooter = boardFooter;
+    }
+    
     public void setBoard(Player player, int time) {
         this.objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        this.objective.setDisplayName("§6TNTTAG");
+        this.objective.setDisplayName("§6§lTNTTAG");
         
-        Score money = this.objective.getScore("Player:");
-        money.setScore(this.players.size());
+        Score playerlist = this.objective.getScore("Player:");
+        Score seconds = this.objective.getScore("Tempo:");
         
-        Score tags = this.objective.getScore("Time:");
-        tags.setScore(time);
+        playerlist.setScore(this.alivePlayers.size());
+        seconds.setScore(time);
         
         player.setScoreboard(this.board);
     }
