@@ -51,17 +51,6 @@ public class CountdownManager {
     public void runCountdown(Arena arena, Boolean forceStart) {
         int seconds = arena.getSeconds();
         
-        if(arena.getAlivePlayers().size() < arena.getMinPlayers()) {
-            if(forceStart) {
-                plugin.getLogger().info("Arena " + arena.getName() + " forced to start. Countdown: " + seconds);
-            }else {
-                Bukkit.getScheduler().cancelTask(arena.getTaskId());
-                arena.setRunningCountdown(Boolean.FALSE);
-                arena.sendMessage("§cNon ci sono abbastanza giocatori. Countdown interrotto!");
-                return;
-            }
-        }
-        
         if(timesToBroadcast.contains(seconds)) {
             if(seconds == 1) {
                 arena.sendMessage(plugin.getConfig().getString("messages.second-left")
@@ -80,6 +69,17 @@ public class CountdownManager {
             
             player.setLevel(seconds);
             arena.setBoard(player, seconds);
+        }
+        
+        if(arena.getAlivePlayers().size() < arena.getMinPlayers()) {
+            if(forceStart) {
+                plugin.getLogger().info("Arena " + arena.getName() + " forced to start. Countdown: " + seconds);
+            }else {
+                Bukkit.getScheduler().cancelTask(arena.getTaskId());
+                arena.setRunningCountdown(Boolean.FALSE);
+                arena.sendMessage("§cNon ci sono abbastanza giocatori. Countdown interrotto!");
+                return;
+            }
         }
             
         if(seconds == 0) {
