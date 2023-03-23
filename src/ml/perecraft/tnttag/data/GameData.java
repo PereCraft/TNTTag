@@ -20,24 +20,25 @@ public class GameData {
     
     private final TNTTag plugin;
     
+    private File gameDataFile;
+    private FileConfiguration gameDataConfig;
+    
     public GameData(TNTTag plugin) {
 		this.plugin = plugin;
     }
     
-    File gameDataFile;
-    FileConfiguration gameDataConfig;
-    
     public void load() {
         gameDataFile = new File("plugins/TNTTAG/GameData.yml");
         
-        if(!gameDataFile.exists()) {
+        if (!gameDataFile.exists()) {
             try {
                 gameDataFile.createNewFile();
-            }catch(IOException e){
+            } catch (IOException e){
                 plugin.getLogger().log(Level.SEVERE, "Impossibile creare GameData file");
                 plugin.getLogger().log(Level.SEVERE, e.getMessage());
             }
         }
+
         plugin.getLogger().info("Loading GameData");
         
         gameDataConfig = (FileConfiguration) YamlConfiguration.loadConfiguration(gameDataFile);
@@ -46,34 +47,32 @@ public class GameData {
     }
     
     public void reload() {
-        if(gameDataFile == null || !gameDataFile.exists()) {
+        if (gameDataFile == null || !gameDataFile.exists()) {
             load();
-        }else {
+        } else {
             gameDataConfig = (FileConfiguration) YamlConfiguration.loadConfiguration(gameDataFile);
         }
         plugin.getLogger().info("GameData reloaded");
     }
     
     public void save() {
-        if(gameDataFile == null || gameDataConfig == null) {
+        if (gameDataFile == null || gameDataConfig == null) {
             plugin.getLogger().log(Level.WARNING, "Impossibile trovare GameData file");
             return;
         }
+
         plugin.getLogger().info("Saving GameData");
+
         try {
             gameDataConfig.save(gameDataFile);
-        }catch (IOException e) {
+        } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Impossibile salvare GameData file");
             plugin.getLogger().log(Level.SEVERE, e.getMessage());
         }
     }
     
-    public FileConfiguration getDataConfig() {
-        return gameDataConfig;
-    }
-    
     public void clearData() {
-        if(gameDataFile == null || !gameDataFile.exists()) {
+        if (gameDataFile == null || !gameDataFile.exists()) {
             plugin.getLogger().severe("Impossibile trovare PlayerData file");
             return;
         }
@@ -83,6 +82,10 @@ public class GameData {
         plugin.getLogger().info("Removing GameData file");
         gameDataFile.delete();
         load();
+    }
+
+    public FileConfiguration getDataConfig() {
+        return gameDataConfig;
     }
     
 }

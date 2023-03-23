@@ -22,26 +22,23 @@ import org.bukkit.scoreboard.ScoreboardManager;
  */
 public class Arena {
     
-    public static ArrayList<Arena> arenaObjects = new ArrayList<>();
-    
+    private ScoreboardManager boardManager;
+    private Scoreboard board;
+    private Objective objective;
+    private String boardFooter;
+    private String name;
     private Location lobbyLocation;
     private Location startLocation;
     private Location spectLocation;
-    private String name;
-    private String boardFooter;
-    private ArrayList<UUID> players = new ArrayList<>();
-    private ArrayList<UUID> tntPlayers = new ArrayList<>();
-    private ArrayList<UUID> alivePlayers = new ArrayList<>();
     private int maxPlayers;
     private int minPlayers;
     private int taskId;
     private int seconds;
     private boolean inGame;
     private boolean runningCountdown;
-    
-    ScoreboardManager boardManager;
-    Scoreboard board;
-    Objective objective;
+    private ArrayList<UUID> players = new ArrayList<>();
+    private ArrayList<UUID> tntPlayers = new ArrayList<>();
+    private ArrayList<UUID> alivePlayers = new ArrayList<>();
     
     public Arena(String name, Location lobbyLocation, Location startLocation, Location spectLocation, int maxPlayers, int minPlayers) {
         this.boardManager = Bukkit.getScoreboardManager();
@@ -136,8 +133,8 @@ public class Arena {
     }
     
     public void sendMessage(String message) {
-        for(UUID player : this.players) {
-            Bukkit.getPlayer(player).sendMessage(message);
+        for (UUID playerID : this.players) {
+            Bukkit.getPlayer(playerID).sendMessage(message);
         }
     }
     

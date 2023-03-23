@@ -6,7 +6,6 @@
 package ml.perecraft.tnttag.data;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import ml.perecraft.tnttag.TNTTag;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,20 +19,20 @@ public class PlayerData {
     
     private final TNTTag plugin;
     
+    private File playerDataFile;
+    private FileConfiguration playerDataConfig;
+    
     public PlayerData(TNTTag plugin) {
 		this.plugin = plugin;
     }
     
-    File playerDataFile;
-    FileConfiguration playerDataConfig;
-    
     public void load() {
         playerDataFile = new File("plugins/TNTTAG/PlayerData.yml");
         
-        if(!playerDataFile.exists()) {
+        if (!playerDataFile.exists()) {
             try {
                 playerDataFile.createNewFile();
-            }catch(IOException e) {
+            } catch (IOException e) {
                 plugin.getLogger().severe("Impossibile creare PlayerData file");
                 plugin.getLogger().severe(e.getMessage());
             }
@@ -46,24 +45,26 @@ public class PlayerData {
     }
     
     public void reload() {
-        if(playerDataFile == null || !playerDataFile.exists()) {
+        if (playerDataFile == null || !playerDataFile.exists()) {
             load();
-        }else {
+        } else {
             playerDataConfig = (FileConfiguration) YamlConfiguration.loadConfiguration(playerDataFile);
         }
+
         plugin.getLogger().info("PlayerData reloaded");
     }
     
     public void save() {
-        if(playerDataFile == null || playerDataConfig == null) {
+        if (playerDataFile == null || playerDataConfig == null) {
             plugin.getLogger().severe("Impossibile trovare PlayerData file");
             return;
         }
         
         plugin.getLogger().info("Saving PlayerData");
+
         try {
             playerDataConfig.save(playerDataFile);
-        }catch(IOException e) {
+        } catch (IOException e) {
             plugin.getLogger().severe("Impossibile salvare PlayerData file");
             plugin.getLogger().severe(e.getMessage());
         }
@@ -74,7 +75,7 @@ public class PlayerData {
     }
     
     public void clearData() {
-        if(playerDataFile == null || !playerDataFile.exists()) {
+        if (playerDataFile == null || !playerDataFile.exists()) {
             plugin.getLogger().severe("Impossibile trovare PlayerData file");
             return;
         }

@@ -12,7 +12,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -27,18 +26,18 @@ public class TagCommand implements CommandExecutor {
     
     private final TNTTag plugin;
     
+    private final String denyMsg = "§cNon hai accesso a quel comando";
+    
     public TagCommand(TNTTag plugin) {
 		this.plugin = plugin;
     }
     
-    String noperm = "§cNon hai accesso a quel comando";
-    
     @Override
     public boolean onCommand(CommandSender cs, Command name, String label, String args[]) {
-        if(cs instanceof Player) {
+        if (cs instanceof Player) {
             Player player = (Player) cs;
             
-            if(args.length == 0) {
+            if (args.length == 0) {
                 player.sendMessage("§aTNTTag §7v. §e"
                         + plugin.getDescription().getVersion()
                         + "§7 by §aPereCraft \n"
@@ -47,13 +46,13 @@ public class TagCommand implements CommandExecutor {
                 return true;
             }
             
-            if(args[0].equalsIgnoreCase("join")) {
-                if(!player.hasPermission("tnttag.join.arena")) {
-                    player.sendMessage(noperm);
+            if (args[0].equalsIgnoreCase("join")) {
+                if (!player.hasPermission("tnttag.join.arena")) {
+                    player.sendMessage(denyMsg);
                     return false;
                 }
                 
-                if(args.length < 2) {
+                if (args.length < 2) {
                     player.sendMessage("§cUso: /tnttag join [arena]");
                     return false;
                 }
@@ -61,23 +60,24 @@ public class TagCommand implements CommandExecutor {
                 plugin.getJoinTools().joinArena(player, args[1]);
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("autojoin")) {
-                if(!player.hasPermission("tnttag.join.auto")) {
-                    player.sendMessage(noperm);
+            } else if (args[0].equalsIgnoreCase("autojoin")) {
+                if (!player.hasPermission("tnttag.join.auto")) {
+                    player.sendMessage(denyMsg);
                     return false;
                 }
                 
                 plugin.getJoinTools().autoJoin(player);
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("leave")) {
-                if(!player.hasPermission("tnttag.leave")) {
-                    player.sendMessage(noperm);
+            } else if (args[0].equalsIgnoreCase("leave")) {
+                if (!player.hasPermission("tnttag.leave")) {
+                    player.sendMessage(denyMsg);
                     return false;
                 }
+
                 Arena arena = plugin.getArenaManager().getArenaFromPlayer(player);
                 
-                if(arena == null) {
+                if (arena == null) {
                     player.sendMessage("§cNon sei in nessuna arena.");
                     return false;
                 }
@@ -85,38 +85,38 @@ public class TagCommand implements CommandExecutor {
                 plugin.getArenaManager().removePlayer(player);
                 return true;
                 
-            }else if(args[0].equals("spectate")) {
-                if(!player.hasPermission("tnttag.spectate")) {
-                    player.sendMessage(noperm);
+            } else if (args[0].equals("spectate")) {
+                if (!player.hasPermission("tnttag.spectate")) {
+                    player.sendMessage(denyMsg);
                     return false;
                 }
                 
-                if(args.length < 2) {
+                if (args.length < 2) {
                     player.sendMessage("§cUso: /tnttag spectate [player/arena]");
                     return false;
                 }
                 
-                if(plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+                if (plugin.getArenaManager().getArenaFromPlayer(player) != null) {
                     player.sendMessage("§cDevi uscire dall'arena prima di spectare");
                     return false;
                 }
                 
                 Player target = Bukkit.getPlayer(args[1]);
                 
-                if(target != null) {
+                if (target != null) {
                     Arena arena = plugin.getArenaManager().getArenaFromPlayer(target);
                     
-                    if(arena == null) {
+                    if (arena == null) {
                         player.sendMessage("§e" + player.getName() + "§c non è in gioco.");
                         return false;
                     }
                     
                     plugin.getArenaManager().addSpectator(player, arena);
                     player.sendMessage("§aStai spectando §e" + player.getName());
-                }else {
+                } else {
                     Arena arena = plugin.getArenaManager().getArena(args[1]);
                     
-                    if(arena == null) {
+                    if (arena == null) {
                         player.sendMessage("§cArena non trovata.");
                         return false;
                     }
@@ -126,20 +126,20 @@ public class TagCommand implements CommandExecutor {
                 }
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("stats")) {
-                if(!player.hasPermission("tnttag.stats")) {
-                    player.sendMessage(noperm);
+            } else if (args[0].equalsIgnoreCase("stats")) {
+                if (!player.hasPermission("tnttag.stats")) {
+                    player.sendMessage(denyMsg);
                     return false;
                 }
                 
-                if(args.length == 1) {
+                if (args.length == 1) {
                     player.sendMessage("§6Statistiche TNTTAG:");
                     player.sendMessage("Vittorie: §a" + plugin.getPlayerDataManager().getPlayerWins(player.getName()));
                     player.sendMessage("Partite giocate: §a" + plugin.getPlayerDataManager().getGamesPlayed(player.getName()));
                     
-                }else {
-                    if(!player.hasPermission("tnttag.stats.others")) {
-                        player.sendMessage(noperm);
+                } else {
+                    if (!player.hasPermission("tnttag.stats.others")) {
+                        player.sendMessage(denyMsg);
                         return false;
                     }
                     
@@ -149,16 +149,17 @@ public class TagCommand implements CommandExecutor {
                 }
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("help")) {
+            } else if (args[0].equalsIgnoreCase("help")) {
                 sendHelpMessages(player);
                 return true;
-            }else {
+
+            } else {
                 player.sendMessage("§cComando sconosciuto. Usa §6/tnttag help §cper aiuto");
                 return false;
             }
             
-        }else if(cs instanceof ConsoleCommandSender) {
-            if(args.length == 0) {
+        } else if (cs instanceof ConsoleCommandSender) {
+            if (args.length == 0) {
                 cs.sendMessage("§aTNTTag §7v. §e" + plugin.getDescription().getVersion());
                 return true;
             }

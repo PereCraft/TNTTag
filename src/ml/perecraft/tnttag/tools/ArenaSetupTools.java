@@ -18,17 +18,17 @@ public class ArenaSetupTools {
     
     private final TNTTag plugin;
     
-    public ArenaSetupTools(TNTTag plugin) {
-		this.plugin = plugin;
-    }
-    
     private static HashMap<Player, String> tempArenas = new HashMap<>();
     private static HashMap<Player, Location> tempLobbyLocation = new HashMap<>();
     private static HashMap<Player, Location> tempStartLocation = new HashMap<>();
     private static HashMap<Player, Location> tempSpectLocation = new HashMap<>();
+
+    public ArenaSetupTools(TNTTag plugin) {
+		this.plugin = plugin;
+    }
     
     public void createArena(Player player, String arenaName) {
-        if(tempArenas.containsKey(player)) {
+        if (tempArenas.containsKey(player)) {
             player.sendMessage("§cStai già creando l'arena" + tempArenas.get(player) + ". Usa /ttsetup cancel per annullare.");
             return;
         }
@@ -38,8 +38,8 @@ public class ArenaSetupTools {
     }
     
     public void cancelArenaCreation(Player player) {
-        if(!tempArenas.containsKey(player)) {
-            if(player.isOnline()) {
+        if (!tempArenas.containsKey(player)) {
+            if (player.isOnline()) {
                 player.sendMessage("§cNon stai creando alcuna arena.");
             }
             return;
@@ -53,7 +53,7 @@ public class ArenaSetupTools {
     }
     
     public void setLobbyLocation(Player player, Location lobbyLocation) {
-        if(!tempArenas.containsKey(player)) {
+        if (!tempArenas.containsKey(player)) {
             player.sendMessage("§cDevi prima creare l'arena. Usa /ttsetup create [arena]");
             return;
         }
@@ -63,7 +63,7 @@ public class ArenaSetupTools {
     }
     
     public void setStartLocation(Player player, Location startLocation) {
-        if(!tempArenas.containsKey(player)) {
+        if (!tempArenas.containsKey(player)) {
             player.sendMessage("§cDevi prima creare l'arena. Usa /ttsetup create [arena]");
             return;
         }
@@ -73,7 +73,7 @@ public class ArenaSetupTools {
     }
     
     public void setSpectLocation(Player player, Location spectLocation) {
-        if(!tempArenas.containsKey(player)) {
+        if (!tempArenas.containsKey(player)) {
             player.sendMessage("§cDevi prima creare l'arena. Usa /ttsetup create [arena]");
             return;
         }
@@ -83,7 +83,7 @@ public class ArenaSetupTools {
     }
     
     public void saveArena(Player player) {
-        if(!tempArenas.containsKey(player)) {
+        if (!tempArenas.containsKey(player)) {
             player.sendMessage("§cNon stai creando nessuna arena.");
             return;
         }
@@ -92,17 +92,17 @@ public class ArenaSetupTools {
         Location startLocation = tempStartLocation.get(player);
         Location spectLocation = tempSpectLocation.get(player);
         
-        if(lobbyLocation == null) {
+        if (lobbyLocation == null) {
             player.sendMessage("§cLobby location non impostata.");
             return;
         }
         
-        if(startLocation == null) {
+        if (startLocation == null) {
             player.sendMessage("§cSpawn location non impostata.");
             return;
         }
         
-        if(spectLocation == null) {
+        if (spectLocation == null) {
             player.sendMessage("§cSpectator location non impostata.");
             return;
         }

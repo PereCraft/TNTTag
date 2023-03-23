@@ -27,12 +27,12 @@ public class InventoryListener implements Listener {
     
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if(event.getInventory() == null || event.getView() == null) return;
+        if (event.getInventory() == null || event.getView() == null) return;
         
-        if(event.getWhoClicked() instanceof Player) {
+        if (event.getWhoClicked() instanceof Player) {
             Player player = (Player) event.getWhoClicked();
             
-            if(plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+            if (plugin.getArenaManager().getArenaFromPlayer(player) != null) {
                 event.setCancelled(true);
             }
         }
@@ -40,10 +40,10 @@ public class InventoryListener implements Listener {
     
     @EventHandler
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if(event.getEntity() instanceof Player) {
+        if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             
-            if(plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+            if (plugin.getArenaManager().getArenaFromPlayer(player) != null) {
                 event.setCancelled(true);
             }
         }
@@ -53,7 +53,7 @@ public class InventoryListener implements Listener {
     public void onItemDrop(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
         
-        if(plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+        if (plugin.getArenaManager().getArenaFromPlayer(player) != null) {
             event.setCancelled(true);
         }
     }

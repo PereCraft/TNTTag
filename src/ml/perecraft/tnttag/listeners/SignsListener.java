@@ -22,33 +22,32 @@ import org.bukkit.event.player.PlayerInteractEvent;
 public class SignsListener implements Listener {
     
     private final TNTTag plugin;
-    
-    public SignsListener(TNTTag plugin) {
-		this.plugin = plugin;
-    }
-    
     private final String signTitle = "§6[TNTTAG]";
     private final String signJoin = "§aEntra";
     private final String signAutoJoin = "§aAutoJoin";
     private final String signLeave = "§cEsci";
     
+    public SignsListener(TNTTag plugin) {
+		this.plugin = plugin;
+    }
+    
     @EventHandler
     public void onSignChange(SignChangeEvent event) {
-        if(event.getBlock() == null) return;
+        if (event.getBlock() == null) return;
         
-        if(event.getLine(0).toLowerCase().contains("[tnttag]")) {
+        if (event.getLine(0).toLowerCase().contains("[tnttag]")) {
             Player player = event.getPlayer();
             
-            if(!player.hasPermission("tnttag.sign.create")) {
+            if (!player.hasPermission("tnttag.sign.create")) {
                 player.sendMessage("§cNon hai il permesso di creare cartelli TNTTag");
                 event.setCancelled(true);
                 return;
             }
             
-            if(event.getLine(1).equalsIgnoreCase("join")) {
+            if (event.getLine(1).equalsIgnoreCase("join")) {
                 Arena arena = plugin.getArenaManager().getArena(event.getLine(2));
                 
-                if(arena == null) {
+                if (arena == null) {
                     player.sendMessage("§cArena non trovata");
                     event.setCancelled(true);
                     return;
@@ -58,15 +57,15 @@ public class SignsListener implements Listener {
                 event.setLine(1, signJoin);
                 event.setLine(2, arena.getName());
                 
-            }else if(event.getLine(1).equalsIgnoreCase("autojoin")) {
+            } else if (event.getLine(1).equalsIgnoreCase("autojoin")) {
                 event.setLine(0, signTitle);
                 event.setLine(1, signAutoJoin);
                 
-            }else if(event.getLine(1).equalsIgnoreCase("leave")) {
+            } else if (event.getLine(1).equalsIgnoreCase("leave")) {
                 event.setLine(0, signTitle);
                 event.setLine(1, signLeave);
                 
-            }else {
+            } else {
                 player.sendMessage("§cStringa non valida");
                 event.setCancelled(true);
             }

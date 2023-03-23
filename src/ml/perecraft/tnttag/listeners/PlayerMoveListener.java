@@ -20,18 +20,20 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class PlayerMoveListener implements Listener {
     
     private final TNTTag plugin;
+    private final Boolean forcedBorder;
     
     public PlayerMoveListener(TNTTag plugin) {
 		this.plugin = plugin;
+        this.forcedBorder = plugin.getConfig().getBoolean("world-options.force-border");
     }
     
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
-        if(event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
+        if (event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
             Location to = event.getTo();
             
-            if(to == null) return;
-            if(isOutsideOfBorder(to) && isForcedBorder()) {
+            if (to == null) return;
+            if (forcedBorder && isOutsideOfBorder(to)) {
                 event.setTo(event.getFrom());
             }
         }
@@ -44,10 +46,6 @@ public class PlayerMoveListener implements Listener {
         double x = loc.getX() - center.getX(), z = loc.getZ() - center.getZ();
         
         return ((x > size || (-x) > size) || (z > size || (-z) > size));
-    }
-    
-    public boolean isForcedBorder() {
-        return plugin.getConfig().getBoolean("world-options.force-border");
     }
     
 }

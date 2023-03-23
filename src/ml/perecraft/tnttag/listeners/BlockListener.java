@@ -6,6 +6,8 @@
 package ml.perecraft.tnttag.listeners;
 
 import ml.perecraft.tnttag.TNTTag;
+import ml.perecraft.tnttag.util.Arena;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,8 +29,9 @@ public class BlockListener implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        Arena arena = plugin.getArenaManager().getArenaFromPlayer(player);
         
-        if(player != null && plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+        if (player != null && arena != null) {
             event.setCancelled(true);
         }
     }
@@ -36,8 +39,9 @@ public class BlockListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         Player player = event.getPlayer();
+        Arena arena = plugin.getArenaManager().getArenaFromPlayer(player);
         
-        if(player != null && plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+        if (player != null && arena != null) {
             event.setCancelled(true);
         }
     }

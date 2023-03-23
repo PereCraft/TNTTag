@@ -23,7 +23,7 @@ public class TitleSender {
     private final TNTTag plugin;
     
     public TitleSender(TNTTag plugin) {
-		this.plugin = plugin;
+		  this.plugin = plugin;
     }
     
     public void sendTitle(Player player, String title, String subTitle, int fadeIn, int stay, int fadeOut) {

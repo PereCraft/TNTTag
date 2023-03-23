@@ -20,20 +20,24 @@ import org.bukkit.inventory.ItemStack;
 public class InteractListener implements Listener {
  
     private final TNTTag plugin;
+    private final String leaveItemMeta;
     
     public InteractListener(TNTTag plugin) {
 		this.plugin = plugin;
+        this.leaveItemMeta = plugin.getConfig().getString("leave-item.name").replaceAll("&", "§");
     }
     
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        Action action = event.getAction();
+
+        if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
             ItemStack itemInHand = event.getItem();
             
-            if(itemInHand == null) return;
+            if (itemInHand == null) return;
             
-            if(itemInHand.getType() == Material.REDSTONE && itemInHand.hasItemMeta()) {
-                if(itemInHand.getItemMeta().getDisplayName().equals(plugin.getConfig().getString("leave-item.name").replaceAll("&", "§"))) {
+            if (itemInHand.getType() == Material.REDSTONE && itemInHand.hasItemMeta()) {
+                if (itemInHand.getItemMeta().getDisplayName().equals(leaveItemMeta)) {
                     event.setCancelled(true);
                     plugin.getArenaManager().removePlayer(event.getPlayer());
                 }

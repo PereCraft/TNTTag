@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 import ml.perecraft.tnttag.TNTTag;
+import ml.perecraft.tnttag.tools.TitleSender;
 import ml.perecraft.tnttag.util.Arena;
 import org.bukkit.Bukkit;
-import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,39 +30,44 @@ public class ArenaManager {
     
     private final TNTTag plugin;
     
+    private ArrayList<Arena> arenaObjects = new ArrayList<>();
+    
     public ArenaManager(TNTTag plugin) {
 		this.plugin = plugin;
     }
     
     public Arena getArena(String name) {
-        for(Arena loopArena : getArenas()) {
-            if(loopArena.getName().equalsIgnoreCase(name)) {
-                return loopArena;
+        for (Arena arena : getArenas()) {
+            if (arena.getName().equalsIgnoreCase(name)) {
+                return arena;
             }
         }
         return null;
     }
     
     public Arena getArenaFromPlayer(Player player) {
-        for(Arena loopArena : getArenas()) {
-            if(loopArena.getPlayers().contains(player.getUniqueId())) {
-                return loopArena;
+        for (Arena arena : getArenas()) {
+            if (arena.getPlayers().contains(player.getUniqueId())) {
+                return arena;
             }
         }
         return null;
     }
     
     public boolean isArenaAvailable(Arena arena) {
-        if(arena == null || arena.isFull() || arena.isInGame() || arena.getLobbyLocation() == null || arena.getStartLocation() == null) {
-            return false;
-        }
-        return true;
+        return !(arena == null || arena.isFull() || arena.isInGame() || arena.getLobbyLocation() == null || arena.getStartLocation() == null);
     }
     
     public void addPlayer(Player player, Arena arena) {
-        if(arena.getPlayers().contains(player.getUniqueId())) return;
+        if (arena.getPlayers().contains(player.getUniqueId())) {
+            plugin.getLogger().warning("Player " + player.getName() + " is already in arena " + arena.getName());
+            return;
+        };
+
+        int countdown = plugin.getConfig().getInt("countdown");
+        TitleSender ts = plugin.getTitleSender();
         
-        if(plugin.getConfig().getBoolean("send-arenajoin-msg")) {
+        if (plugin.getConfig().getBoolean("send-arenajoin-msg")) {
             player.sendMessage(plugin.getConfig().getString("messages.arenajoin").replaceAll("&", "§"));
         }
         
@@ -73,29 +78,29 @@ public class ArenaManager {
         player.updateInventory();
         player.teleport(arena.getLobbyLocation());
         player.setGameMode(GameMode.ADVENTURE);
-        arena.setBoard(player, plugin.getConfig().getInt("countdown"));
+        arena.setBoard(player, countdown);
         arena.sendMessage(player.getDisplayName() + "§7 entra nell'arena.");
-        plugin.getTitleSender().sendTitle(player, "§8[§6TNTTag§8]", "§7Arena: §e" + arena.getName(), 5, 40, 5);
+        ts.sendTitle(player, "§8[§6TNTTag§8]", "§7Arena: §e" + arena.getName(), 5, 40, 5);
         
-        if(arena.getAlivePlayers().size() >= arena.getMinPlayers() && !arena.isRunningCountdown()) {
-            plugin.getCountdownManager().startCountdown(arena, plugin.getConfig().getInt("countdown"));
+        if (arena.getAlivePlayers().size() >= arena.getMinPlayers() && !arena.isRunningCountdown()) {
+            plugin.getCountdownManager().startCountdown(arena, countdown);
         }
     }
     
     public void removePlayer(Player player) {
         Arena arena = getArenaFromPlayer(player);
         
-        if(arena != null) {
+        if (arena != null) {
             UUID playerId = player.getUniqueId();
             
             restorePlayer(player);
             arena.getPlayers().remove(playerId);
             arena.removeBoard(player);
             
-            if(arena.getAlivePlayers().contains(playerId)) {
+            if (arena.getAlivePlayers().contains(playerId)) {
                 arena.getAlivePlayers().remove(playerId);
             }
-            if(arena.getTntPlayers().contains(playerId)) {
+            if (arena.getTntPlayers().contains(playerId)) {
                 arena.getTntPlayers().remove(playerId);
             }
             
@@ -115,7 +120,7 @@ public class ArenaManager {
     }
     
     public void addSpectator(Player player, Arena arena) {
-        if(arena.getPlayers().contains(player.getUniqueId())) return;
+        if (arena.getPlayers().contains(player.getUniqueId())) return;
         
         arena.getPlayers().add(player.getUniqueId());
         player.getInventory().clear();
@@ -160,7 +165,7 @@ public class ArenaManager {
     public void stopGame(Arena arena) {
         plugin.getLogger().log(Level.INFO, "Stopping arena {0}", arena.getName());
         
-        for(UUID loopPlayer : arena.getPlayers()) {
+        for (UUID loopPlayer : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(loopPlayer);
             
             arena.removeBoard(player);
@@ -174,8 +179,8 @@ public class ArenaManager {
     }
     
     public void stopGames() {
-        for(Arena loopArena : getArenas()) {
-            for(UUID loopPlayer : loopArena.getPlayers()) {
+        for (Arena loopArena : arenaObjects) {
+            for (UUID loopPlayer : loopArena.getPlayers()) {
                 Player player = Bukkit.getPlayer(loopPlayer);
                 
                 loopArena.removeBoard(player);
@@ -215,7 +220,7 @@ public class ArenaManager {
         int minPlayers = plugin.getConfig().getInt("min-players");
         
         Arena arena = new Arena(arenaName, lobbyLocation, spawnLocation, spectLocation, maxPlayers, minPlayers);
-        getArenas().add(arena);
+        arenaObjects.add(arena);
         setWorldOptions(arena.getStartLocation().getWorld());
         plugin.getLogger().log(Level.INFO, "Loaded arena {0}", arenaName);
     }
@@ -223,7 +228,7 @@ public class ArenaManager {
     public void loadArenas() {
         FileConfiguration gameData = plugin.getGameData().getDataConfig();
         
-        if(gameData.getString("arenas") == null) {
+        if (gameData.getString("arenas") == null) {
             plugin.getLogger().info("Non sono state trovate arene da caricare");
             return;
         }
@@ -231,28 +236,28 @@ public class ArenaManager {
         int maxPlayers = plugin.getConfig().getInt("max-players");
         int minPlayers = plugin.getConfig().getInt("min-players");
         
-        for(String key : gameData.getConfigurationSection("arenas").getKeys(false)) {
+        for (String key : gameData.getConfigurationSection("arenas").getKeys(false)) {
             String path = "arenas." + key + ".";
             
             Location lobbyLocation = (Location) gameData.get(path + "lobby");
             Location spawnLocation = (Location) gameData.get(path + "spawn");
             Location spectLocation = (Location) gameData.get(path + "spect");
             
-            if(lobbyLocation == null || spawnLocation == null || spectLocation == null) {
+            if (lobbyLocation == null || spawnLocation == null || spectLocation == null) {
                 plugin.getLogger().log(Level.WARNING, "Impossibile caricare arena {0} location non valida", key);
                 continue;
             }
             
             Arena arena = new Arena(key, lobbyLocation, spawnLocation, spectLocation, maxPlayers, minPlayers);
             
-            getArenas().add(arena);
+            arenaObjects.add(arena);
             setWorldOptions(arena.getStartLocation().getWorld());
             plugin.getLogger().log(Level.INFO, "Loaded arena {0}", key);
         }
     }
     
     public void unloadArena(Arena arena) {
-        if(arena.isInGame() || arena.isRunningCountdown()) {
+        if (arena.isInGame() || arena.isRunningCountdown()) {
             stopGame(arena);
         }
         
@@ -261,7 +266,7 @@ public class ArenaManager {
     }
     
     public void setWorldOptions(World world) {
-        if(!plugin.getConfig().getBoolean("world-options.enabled")) return;
+        if (!plugin.getConfig().getBoolean("world-options.enabled")) return;
         
         double border = plugin.getConfig().getDouble("world-options.worldborder");
         boolean moballowed = plugin.getConfig().getBoolean("world-options.allow-creature-spawn");
@@ -272,6 +277,6 @@ public class ArenaManager {
     }
     
     public ArrayList<Arena> getArenas() {
-        return Arena.arenaObjects;
+        return arenaObjects;
     }
 }

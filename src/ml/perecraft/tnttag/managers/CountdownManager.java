@@ -11,13 +11,10 @@ import java.util.UUID;
 import java.util.logging.Level;
 import ml.perecraft.tnttag.TNTTag;
 import ml.perecraft.tnttag.util.Arena;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -29,24 +26,28 @@ import org.bukkit.potion.PotionEffectType;
 public class CountdownManager {
     
     private final TNTTag plugin;
+
+    private List<Integer> timesToBroadcast;
     
     public CountdownManager(TNTTag plugin) {
 		this.plugin = plugin;
     }
-    
-    private final List<Integer> timesToBroadcast = TNTTag.getInstance().getConfig().getIntegerList("times-to-broadcast");
+
+    public void setTimesToBroadcast(List<Integer> timesToBroadcast) {
+        this.timesToBroadcast = timesToBroadcast;
+    }
     
     public void startCountdown(Arena arena, int seconds) {
-        if(!arena.isRunningCountdown() && arena.getAlivePlayers().size() >= arena.getMinPlayers()) {
+        if (!arena.isRunningCountdown() && arena.getAlivePlayers().size() >= arena.getMinPlayers()) {
             arena.setSeconds(seconds);
-            arena.setRunningCountdown(Boolean.TRUE);
+            arena.setRunningCountdown(true);
             arena.setTaskId(Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> runCountdown(arena, false), 20L, 20L));
         }
     }
     
     public void forceStartCountdown(Arena arena) {
         arena.setSeconds(plugin.getConfig().getInt("countdown"));
-        arena.setRunningCountdown(Boolean.TRUE);
+        arena.setRunningCountdown(true);
         arena.setTaskId(Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> runCountdown(arena, true), 20L, 20L));
         plugin.getLogger().log(Level.INFO, "Arena {0} forced start. Questo metodo può causare problemi. Usare solo per debug.", arena.getName());
     }
@@ -54,8 +55,8 @@ public class CountdownManager {
     public void runCountdown(Arena arena, Boolean forceStart) {
         int seconds = arena.getSeconds();
         
-        if(timesToBroadcast.contains(seconds)) {
-            if(seconds == 1) {
+        if (timesToBroadcast.contains(seconds)) {
+            if (seconds == 1) {
                 arena.sendMessage(plugin.getConfig().getString("messages.second-left")
                 .replaceAll("&", "§")
                 );
@@ -67,17 +68,17 @@ public class CountdownManager {
             }
         }
         
-        for(UUID loopPlayer : arena.getPlayers()) {
-            Player player = Bukkit.getPlayer(loopPlayer);
+        for (UUID playerID : arena.getPlayers()) {
+            Player player = Bukkit.getPlayer(playerID);
             
             player.setLevel(seconds);
             arena.setBoard(player, seconds);
         }
         
-        if(arena.getAlivePlayers().size() < arena.getMinPlayers()) {
-            if(forceStart) {
+        if (arena.getAlivePlayers().size() < arena.getMinPlayers()) {
+            if (forceStart) {
                 plugin.getLogger().info("Arena " + arena.getName() + " forced to start. Countdown: " + seconds);
-            }else {
+            } else {
                 Bukkit.getScheduler().cancelTask(arena.getTaskId());
                 arena.setRunningCountdown(Boolean.FALSE);
                 arena.sendMessage("§cNon ci sono abbastanza giocatori. Countdown interrotto!");
@@ -85,18 +86,18 @@ public class CountdownManager {
             }
         }
             
-        if(seconds == 0) {
+        if (seconds == 0) {
             Bukkit.getScheduler().cancelTask(arena.getTaskId());
             pickRandomTNT(arena);
             startGame(arena);
             arena.sendMessage(plugin.getConfig().getString("messages.tnt-released").replaceAll("&", "§"));
-        }else {
+        } else {
             arena.setSeconds(seconds - 1);
         }
     }
     
     public void startGame(Arena arena) {
-        arena.setInGame(Boolean.TRUE);
+        arena.setInGame(true);
         arena.setSeconds((arena.getAlivePlayers().size() > 6) ? 50 : 30);
         
         Location startLocation = arena.getStartLocation();
@@ -104,8 +105,8 @@ public class CountdownManager {
         int speedTime = (arena.getSeconds() + 1) * 20;
         PotionEffect speedEffect = new PotionEffect(PotionEffectType.SPEED, speedTime, speedLevel);
         
-        for(UUID loopPlayer : arena.getAlivePlayers()) {
-            Player player = Bukkit.getPlayer(loopPlayer);
+        for (UUID playerID : arena.getAlivePlayers()) {
+            Player player = Bukkit.getPlayer(playerID);
             
             player.teleport(startLocation);
             player.addPotionEffect(speedEffect);
@@ -117,39 +118,39 @@ public class CountdownManager {
     public void runGame(Arena arena) {
         int seconds = arena.getSeconds();
         
-        if(arena.getAlivePlayers().isEmpty()) {
+        if (arena.getAlivePlayers().isEmpty()) {
             plugin.getArenaManager().stopGame(arena);
             return;
         }
         
-        for(UUID loopPlayer : arena.getPlayers()) {
+        for (UUID loopPlayer : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(loopPlayer);
             
             player.setLevel(arena.getSeconds());
             arena.setBoard(player, arena.getSeconds());
         }
         
-        if(seconds == 0) {
+        if (seconds == 0) {
             Bukkit.getScheduler().cancelTask(arena.getTaskId());
             
-            if(arena.getAlivePlayers().size() == 1) {
+            if (arena.getAlivePlayers().size() == 1) {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> endGame(arena), 20L);
                 
-            }else if(arena.getAlivePlayers().size() == 2 && !arena.getTntPlayers().isEmpty()) {
+            } else if (arena.getAlivePlayers().size() == 2 && !arena.getTntPlayers().isEmpty()) {
                 blowUpTNTs(arena);
                 Bukkit.getScheduler().runTaskLater(plugin, () -> endGame(arena), 20L);
                 
-            }else {
+            } else {
                 blowUpTNTs(arena);
                 startDelayed(arena);
             }
-        }else if(seconds <= 5) {
-            for(UUID loopPlayer : arena.getPlayers()) {
-                plugin.getTitleSender().sendTitle(Bukkit.getPlayer(loopPlayer), "§6" + seconds, "§7all'esplosione", 1, 20, 1);
+        } else if (seconds <= 5) {
+            for (UUID playerID : arena.getPlayers()) {
+                plugin.getTitleSender().sendTitle(Bukkit.getPlayer(playerID), "§6" + seconds, "§7all'esplosione", 1, 20, 1);
             }
             
             arena.setSeconds(seconds - 1);
-        }else {
+        } else {
             arena.setSeconds(seconds - 1);
         }
     }
@@ -157,9 +158,10 @@ public class CountdownManager {
     public void endGame(Arena arena) {
         plugin.getLogger().log(Level.INFO, "Fine gioco sull''arena {0}", arena.getName());
         
-        Player winner = Bukkit.getPlayer(arena.getAlivePlayers().get(0));
+        UUID winnerID = arena.getAlivePlayers().get(0);
+        Player winner = Bukkit.getPlayer(winnerID);
         
-        if(winner != null) {
+        if (winner != null) {
             Bukkit.broadcastMessage(plugin.getConfig().getString("messages.win-message")
                     .replace("%player%", winner.getDisplayName())
                     .replace("%arena%", arena.getName())
@@ -169,7 +171,7 @@ public class CountdownManager {
             plugin.getPlayerDataManager().addWins(winner, 1);
         }
                 
-        for(UUID loopPlayer : arena.getPlayers()) {
+        for (UUID loopPlayer : arena.getPlayers()) {
             Player player = Bukkit.getPlayer(loopPlayer);
             
             player.sendMessage("§6Il gioco è terminato.");
@@ -194,7 +196,7 @@ public class CountdownManager {
     public void runDelayed(Arena arena) {
         int seconds = arena.getSeconds();
         
-        if(seconds == 0) {
+        if (seconds == 0) {
             String tntmsg = plugin.getConfig().getString("messages.tnt-released2")
                     .replaceAll("&", "§");
             
@@ -203,7 +205,7 @@ public class CountdownManager {
             pickRandomTNT(arena);
             startGame(arena);
             
-        }else {
+        } else {
             arena.setSeconds(seconds - 1);
         }
     }
@@ -211,7 +213,7 @@ public class CountdownManager {
     public void pickRandomTNT(Arena arena) {
         int amount = (arena.getAlivePlayers().size() >= 6) ? (arena.getPlayers().size() / 2) : 1;
         
-        while(amount !=0) {
+        while (amount !=0) {
             giveARandomTNT(arena);
             amount--;
         }
@@ -222,8 +224,8 @@ public class CountdownManager {
         UUID[] players = new UUID[arena.getAlivePlayers().size()];
         int i = 0;
             
-        for(UUID loopPlayer : arena.getAlivePlayers()) {
-            players[i] = loopPlayer;
+        for (UUID playerID : arena.getAlivePlayers()) {
+            players[i] = playerID;
             i++;
         }
             
@@ -232,13 +234,11 @@ public class CountdownManager {
         
         plugin.getArenaManager().addTNTPlayer(randomPlayer, arena);
         randomPlayer.sendMessage("§cHai ricevuto una TNT. Buona fortuna!");
-        
-        players = null;
     }
     
     public void blowUpTNTs(Arena arena) {
-        for(UUID loopPlayer : arena.getTntPlayers()) {
-            Player player = Bukkit.getPlayer(loopPlayer);
+        for (UUID playerID : arena.getTntPlayers()) {
+            Player player = Bukkit.getPlayer(playerID);
             
             player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.7F, 0.7F);
             arena.sendMessage(plugin.getConfig().getString("messages.player-blowed-up")
@@ -246,7 +246,7 @@ public class CountdownManager {
                     .replaceAll("&", "§")
             );
             
-            arena.getAlivePlayers().remove(loopPlayer);
+            arena.getAlivePlayers().remove(playerID);
             player.teleport(arena.getSpectatorLocation());
             player.setGameMode(GameMode.SPECTATOR);
             player.sendMessage("§7Sei in modalità spettatore. Digita §e/leave §7per uscire.");
@@ -256,7 +256,7 @@ public class CountdownManager {
     
     public void cancelTask(Arena arena) {
         Bukkit.getScheduler().cancelTask(arena.getTaskId());
-        arena.setInGame(Boolean.FALSE);
-        arena.setRunningCountdown(Boolean.FALSE);
+        arena.setInGame(false);
+        arena.setRunningCountdown(false);
     }
 }

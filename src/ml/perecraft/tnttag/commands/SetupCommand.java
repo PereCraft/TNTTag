@@ -30,20 +30,21 @@ public class SetupCommand implements CommandExecutor {
     
     @Override
     public boolean onCommand(CommandSender cs, Command name, String label, String[] args) {
-        if(cs instanceof Player) {
-            if(!cs.hasPermission("tnttag.setup")) {
+        if (cs instanceof Player) {
+            if (!cs.hasPermission("tnttag.setup")) {
                 cs.sendMessage("§cNon hai accesso a quel comando");
                 return false;
             }
+
             Player player = (Player) cs;
             
-            if(args.length == 0) {
+            if (args.length == 0) {
                 sendHelpMessages(player);
                 return true;
             }
             
-            if(args[0].equalsIgnoreCase("create")) {
-                if(args.length < 2) {
+            if (args[0].equalsIgnoreCase("create")) {
+                if (args.length < 2) {
                     cs.sendMessage("§cUso: /ttsetup create [arena]");
                     return false;
                 }
@@ -51,40 +52,32 @@ public class SetupCommand implements CommandExecutor {
                 plugin.getArenaSetupTools().createArena(player, args[1]);
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("cancel")) {
+            } else if (args[0].equalsIgnoreCase("cancel")) {
                 plugin.getArenaSetupTools().cancelArenaCreation(player);
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("setlobby")) {
+            } else if (args[0].equalsIgnoreCase("setlobby")) {
                 plugin.getArenaSetupTools().setLobbyLocation(player, player.getLocation());
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("setspawn")) {
+            } else if (args[0].equalsIgnoreCase("setspawn")) {
                 plugin.getArenaSetupTools().setStartLocation(player, player.getLocation());
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("setspect")) {
+            } else if (args[0].equalsIgnoreCase("setspect")) {
                 plugin.getArenaSetupTools().setSpectLocation(player, player.getLocation());
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("savearena")) {
+            } else if (args[0].equalsIgnoreCase("savearena")) {
                 plugin.getArenaSetupTools().saveArena(player);
                 return true;
                 
-            }else if(args[0].equalsIgnoreCase("delete")) {
-                if(args.length < 2) {
-                    cs.sendMessage("§cUso: /ttsetup delete [arena]");
-                    return false;
-                }
-                
-                //Delete arena
-                return true;
-            }else {
+            } else {
                 cs.sendMessage("§cComando sconosciuto. Per aiuto: /ttsetup");
                 return false;
             }
             
-        }else if(cs instanceof ConsoleCommandSender) {
+        } else if  (cs instanceof ConsoleCommandSender) {
             cs.sendMessage("§cComando eseguibile solo in gioco.");
             return false;
         }

@@ -6,6 +6,10 @@
 package ml.perecraft.tnttag.listeners;
 
 import ml.perecraft.tnttag.TNTTag;
+import ml.perecraft.tnttag.util.Arena;
+
+import java.util.List;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -18,32 +22,34 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public class CommandListener implements Listener {
     
     private final TNTTag plugin;
+    private final List<String> allowedCmds;
+    private final String denyMsg;
     
     public CommandListener(TNTTag plugin) {
 		this.plugin = plugin;
+        this.allowedCmds = plugin.getConfig().getStringList("allowed-cmds");
+        this.denyMsg = plugin.getConfig().getString("messages.command-denied").replaceAll("&", "§");
     }
     
     @EventHandler
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
-        
-        if(plugin.getArenaManager().getArenaFromPlayer(player) == null) return;
-        
+        Arena arena = plugin.getArenaManager().getArenaFromPlayer(player);
         String[] args = event.getMessage().toLowerCase().split(" ");
         
-        if(args[0].equals("/leave")) {
+        if (arena == null) return;
+        
+        if (args[0].equals("/leave")) {
             event.setCancelled(true);
             plugin.getArenaManager().removePlayer(player);
             player.sendMessage("§cSei uscito dall'arena");
             return;
         }
         
-        if(!plugin.getConfig().getStringList("allowed-cmds").contains(args[0].replaceFirst("/", ""))) {
-            if(!player.hasPermission("tnttag.cmdbypass")) {
+        if (!allowedCmds.contains(args[0].replaceFirst("/", ""))) {
+            if (!player.hasPermission("tnttag.cmdbypass")) {
                 event.setCancelled(true);
-                player.sendMessage(plugin.getConfig().getString("messages.command-denied")
-                        .replaceAll("&", "§")
-                );
+                player.sendMessage(denyMsg);
             }
         }
     }

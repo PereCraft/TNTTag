@@ -14,7 +14,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 /**
@@ -31,11 +30,13 @@ public class EntityDamageListener implements Listener {
     
     @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
-        if(event.getEntity() instanceof Player) {
-            if(event.getCause() == DamageCause.ENTITY_ATTACK) return;
+        if (event.getEntity() instanceof Player) {
+            if (event.getCause() == DamageCause.ENTITY_ATTACK) return;
+
             Player player = (Player) event.getEntity();
+            Arena arena = plugin.getArenaManager().getArenaFromPlayer(player);
             
-            if(plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+            if (arena != null) {
                 event.setCancelled(true);
             }
         }
@@ -43,19 +44,19 @@ public class EntityDamageListener implements Listener {
     
     @EventHandler
     public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
-        if(event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             Player victim = (Player) event.getEntity();
             Player damager = (Player) event.getDamager();
             Arena arena = plugin.getArenaManager().getArenaFromPlayer(victim);
             
-            if(arena == null) return;
+            if (arena == null) return;
             
-            if(!arena.isInGame()) {
+            if (!arena.isInGame()) {
                 event.setCancelled(true);
                 return;
             }
             
-            if(arena.getTntPlayers().contains(damager.getUniqueId())) {
+            if (arena.getTntPlayers().contains(damager.getUniqueId())) {
                 plugin.getArenaManager().removeTNTPlayer(damager, arena);
                 plugin.getArenaManager().addTNTPlayer(victim, arena);
             }
@@ -68,8 +69,9 @@ public class EntityDamageListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        Arena arena = plugin.getArenaManager().getArenaFromPlayer(player);
         
-        if(plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+        if (arena != null) {
             plugin.getArenaManager().removePlayer(player);
             event.setDeathMessage(null);
             plugin.getLogger().log(Level.WARNING, "Player {0} died in arena", player.getName());

@@ -22,7 +22,6 @@ import ml.perecraft.tnttag.listeners.SignsListener;
 import ml.perecraft.tnttag.managers.ArenaManager;
 import ml.perecraft.tnttag.managers.CountdownManager;
 import ml.perecraft.tnttag.managers.PlayerDataManager;
-import ml.perecraft.tnttag.papi.TNTTagPlaceholders;
 import ml.perecraft.tnttag.tools.ArenaSetupTools;
 import ml.perecraft.tnttag.tools.JoinTools;
 import ml.perecraft.tnttag.tools.TitleSender;
@@ -50,27 +49,24 @@ public class TNTTag extends JavaPlugin {
     public void onEnable() {
         plugin = this;
         
+        gameData = new GameData(this);
+        playerData = new PlayerData(this);
         arenaManager = new ArenaManager(this);
         countdownManager = new CountdownManager(this);
         playerDataManager = new PlayerDataManager(this);
         joinTools = new JoinTools(this);
         arenaSetupTools = new ArenaSetupTools(this);
-        gameData = new GameData(this);
-        playerData = new PlayerData(this);
         titleSender = new TitleSender(this);
         
         saveDefaultConfig();
         gameData.load();
         playerData.load();
         arenaManager.loadArenas();
+        countdownManager.setTimesToBroadcast(getConfig().getIntegerList("times-to-broadcast"));
         getCommand("tnttag").setExecutor(new TagCommand(this));
         getCommand("tnttagadmin").setExecutor(new AdminCommand(this));
         getCommand("tnttagsetup").setExecutor(new SetupCommand(this));
         registerEvents();
-        
-        if(getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            new TNTTagPlaceholders(this).register();
-        }
     }
     
     @Override
@@ -79,11 +75,11 @@ public class TNTTag extends JavaPlugin {
     }
     
     public void reloadPlugin() {
+        getLogger().info("Reloading TNTTAG");
         onDisable();
         reloadConfig();
         getServer().getPluginManager().disablePlugin(plugin);
         getServer().getPluginManager().enablePlugin(plugin);
-        getLogger().info("Plugin reloaded.");
     }
     
     public void registerEvents() {
@@ -135,5 +131,5 @@ public class TNTTag extends JavaPlugin {
     public static TNTTag getInstance() {
         return plugin;
     }
-    
+   
 }
