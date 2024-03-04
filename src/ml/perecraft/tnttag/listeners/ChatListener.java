@@ -21,16 +21,16 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 public class ChatListener implements Listener {
     
     private final TNTTag plugin;
-    private final Boolean tnttagChatEnabled;
     
     public ChatListener(TNTTag plugin) {
 		this.plugin = plugin;
-        this.tnttagChatEnabled = plugin.getConfig().getBoolean("tnttag-chat");
     }
     
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (!tnttagChatEnabled) return;
+        if (!plugin.getConfig().getBoolean("tnttag-chat")) {
+            return;
+        }
         
         Player player = event.getPlayer();
         Arena arena = plugin.getArenaManager().getArenaFromPlayer(player);

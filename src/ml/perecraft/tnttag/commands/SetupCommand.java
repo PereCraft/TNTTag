@@ -32,7 +32,7 @@ public class SetupCommand implements CommandExecutor {
     public boolean onCommand(CommandSender cs, Command name, String label, String[] args) {
         if (cs instanceof Player) {
             if (!cs.hasPermission("tnttag.setup")) {
-                cs.sendMessage("§cNon hai accesso a quel comando");
+                plugin.getUtils().sendNoPermissionMessage(cs);
                 return false;
             }
 

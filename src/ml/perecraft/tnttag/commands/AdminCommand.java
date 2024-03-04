@@ -31,7 +31,7 @@ public class AdminCommand implements CommandExecutor {
         
         if (cs instanceof Player || cs instanceof ConsoleCommandSender) {
             if (!cs.hasPermission("tnttag.admin")) {
-                cs.sendMessage("§cNon hai accesso a quel comando");
+                plugin.getUtils().sendNoPermissionMessage(cs);
                 return false;
             }
             

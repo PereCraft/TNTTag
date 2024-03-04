@@ -20,11 +20,9 @@ import org.bukkit.inventory.ItemStack;
 public class InteractListener implements Listener {
  
     private final TNTTag plugin;
-    private final String leaveItemMeta;
     
     public InteractListener(TNTTag plugin) {
 		this.plugin = plugin;
-        this.leaveItemMeta = plugin.getConfig().getString("leave-item.name").replaceAll("&", "§");
     }
     
     @EventHandler
@@ -37,7 +35,9 @@ public class InteractListener implements Listener {
             if (itemInHand == null) return;
             
             if (itemInHand.getType() == Material.REDSTONE && itemInHand.hasItemMeta()) {
-                if (itemInHand.getItemMeta().getDisplayName().equals(leaveItemMeta)) {
+                String leaveItemName = plugin.getConfig().getString("leave-item.name").replaceAll("&", "§");
+
+                if (itemInHand.getItemMeta().getDisplayName().equals(leaveItemName)) {
                     event.setCancelled(true);
                     plugin.getArenaManager().removePlayer(event.getPlayer());
                 }

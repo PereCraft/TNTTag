@@ -22,9 +22,12 @@ import ml.perecraft.tnttag.listeners.SignsListener;
 import ml.perecraft.tnttag.managers.ArenaManager;
 import ml.perecraft.tnttag.managers.CountdownManager;
 import ml.perecraft.tnttag.managers.PlayerDataManager;
+import ml.perecraft.tnttag.managers.SignsManager;
 import ml.perecraft.tnttag.tools.ArenaSetupTools;
 import ml.perecraft.tnttag.tools.JoinTools;
 import ml.perecraft.tnttag.tools.TitleSender;
+import ml.perecraft.tnttag.util.Utils;
+
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -36,14 +39,16 @@ public class TNTTag extends JavaPlugin {
 
     private static TNTTag plugin;
     
-    private static ArenaManager arenaManager;
-    private static CountdownManager countdownManager;
-    private static PlayerDataManager playerDataManager;
-    private static JoinTools joinTools;
-    private static ArenaSetupTools arenaSetupTools;
-    private static GameData gameData;
-    private static PlayerData playerData;
-    private static TitleSender titleSender;
+    private ArenaManager arenaManager;
+    private CountdownManager countdownManager;
+    private PlayerDataManager playerDataManager;
+    private SignsManager signsManager;
+    private JoinTools joinTools;
+    private ArenaSetupTools arenaSetupTools;
+    private GameData gameData;
+    private PlayerData playerData;
+    private TitleSender titleSender;
+    private Utils utils;
     
     @Override
     public void onEnable() {
@@ -54,15 +59,18 @@ public class TNTTag extends JavaPlugin {
         arenaManager = new ArenaManager(this);
         countdownManager = new CountdownManager(this);
         playerDataManager = new PlayerDataManager(this);
+        signsManager = new SignsManager(this);
         joinTools = new JoinTools(this);
         arenaSetupTools = new ArenaSetupTools(this);
         titleSender = new TitleSender(this);
+        utils = new Utils(this);
         
         saveDefaultConfig();
         gameData.load();
         playerData.load();
         arenaManager.loadArenas();
         countdownManager.setTimesToBroadcast(getConfig().getIntegerList("times-to-broadcast"));
+        signsManager.loadConfig();
         getCommand("tnttag").setExecutor(new TagCommand(this));
         getCommand("tnttagadmin").setExecutor(new AdminCommand(this));
         getCommand("tnttagsetup").setExecutor(new SetupCommand(this));
@@ -107,6 +115,10 @@ public class TNTTag extends JavaPlugin {
     public PlayerDataManager getPlayerDataManager() {
         return playerDataManager;
     }
+
+    public SignsManager getSignsManager() {
+        return signsManager;
+    }
     
     public JoinTools getJoinTools() {
         return joinTools;
@@ -126,6 +138,10 @@ public class TNTTag extends JavaPlugin {
     
     public TitleSender getTitleSender() {
         return titleSender;
+    }
+
+    public Utils getUtils() {
+        return utils;
     }
     
     public static TNTTag getInstance() {

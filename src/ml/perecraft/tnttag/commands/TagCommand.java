@@ -26,8 +26,6 @@ public class TagCommand implements CommandExecutor {
     
     private final TNTTag plugin;
     
-    private final String denyMsg = "§cNon hai accesso a quel comando";
-    
     public TagCommand(TNTTag plugin) {
 		this.plugin = plugin;
     }
@@ -48,7 +46,7 @@ public class TagCommand implements CommandExecutor {
             
             if (args[0].equalsIgnoreCase("join")) {
                 if (!player.hasPermission("tnttag.join.arena")) {
-                    player.sendMessage(denyMsg);
+                    plugin.getUtils().sendNoPermissionMessage(player);
                     return false;
                 }
                 
@@ -62,7 +60,7 @@ public class TagCommand implements CommandExecutor {
                 
             } else if (args[0].equalsIgnoreCase("autojoin")) {
                 if (!player.hasPermission("tnttag.join.auto")) {
-                    player.sendMessage(denyMsg);
+                    plugin.getUtils().sendNoPermissionMessage(player);
                     return false;
                 }
                 
@@ -71,7 +69,7 @@ public class TagCommand implements CommandExecutor {
                 
             } else if (args[0].equalsIgnoreCase("leave")) {
                 if (!player.hasPermission("tnttag.leave")) {
-                    player.sendMessage(denyMsg);
+                    plugin.getUtils().sendNoPermissionMessage(player);
                     return false;
                 }
 
@@ -87,7 +85,7 @@ public class TagCommand implements CommandExecutor {
                 
             } else if (args[0].equals("spectate")) {
                 if (!player.hasPermission("tnttag.spectate")) {
-                    player.sendMessage(denyMsg);
+                    plugin.getUtils().sendNoPermissionMessage(player);
                     return false;
                 }
                 
@@ -128,7 +126,7 @@ public class TagCommand implements CommandExecutor {
                 
             } else if (args[0].equalsIgnoreCase("stats")) {
                 if (!player.hasPermission("tnttag.stats")) {
-                    player.sendMessage(denyMsg);
+                    plugin.getUtils().sendNoPermissionMessage(player);
                     return false;
                 }
                 
@@ -139,7 +137,7 @@ public class TagCommand implements CommandExecutor {
                     
                 } else {
                     if (!player.hasPermission("tnttag.stats.others")) {
-                        player.sendMessage(denyMsg);
+                        plugin.getUtils().sendNoPermissionMessage(player);
                         return false;
                     }
                     
@@ -171,7 +169,7 @@ public class TagCommand implements CommandExecutor {
         return false;
     }
     
-    public void sendHelpMessages(Player player) {
+    private void sendHelpMessages(Player player) {
         player.sendMessage("§6--- TNTTAG HELP ---");
         player.spigot().sendMessage(new ComponentBuilder("/tnttag join [arena]")
                 .color(net.md_5.bungee.api.ChatColor.GREEN)

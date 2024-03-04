@@ -22,13 +22,9 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public class CommandListener implements Listener {
     
     private final TNTTag plugin;
-    private final List<String> allowedCmds;
-    private final String denyMsg;
     
     public CommandListener(TNTTag plugin) {
 		this.plugin = plugin;
-        this.allowedCmds = plugin.getConfig().getStringList("allowed-cmds");
-        this.denyMsg = plugin.getConfig().getString("messages.command-denied").replaceAll("&", "§");
     }
     
     @EventHandler
@@ -45,12 +41,14 @@ public class CommandListener implements Listener {
             player.sendMessage("§cSei uscito dall'arena");
             return;
         }
+
+        List<String> allowedCmds = plugin.getConfig().getStringList("allowed-cmds");
         
-        if (!allowedCmds.contains(args[0].replaceFirst("/", ""))) {
-            if (!player.hasPermission("tnttag.cmdbypass")) {
-                event.setCancelled(true);
-                player.sendMessage(denyMsg);
-            }
+        if (!allowedCmds.contains(args[0].replaceFirst("/", "")) && !player.hasPermission("tnttag.cmdbypass")) {
+            String denyMsg = plugin.getConfig().getString("messages.command-denied").replaceAll("&", "§");
+            
+            event.setCancelled(true);
+            player.sendMessage(denyMsg);
         }
     }
     

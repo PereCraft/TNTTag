@@ -54,3 +54,10 @@ messages:
   player-blowed-up: "&6%player% &cè saltato per aria!"
   player-is-it: "&f%player% &6ha la TNT!"
   tnt-given: "&aNon hai più la TNT."
+  no-permission: "&cNon hai accesso a quel comando"
+
+signs:
+    title: "§6[TNTTAG]"
+    join: "§aEntra"
+    autojoin: "§aAutoJoin"
+    leave: "§cEsci"

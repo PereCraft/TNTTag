@@ -15,16 +15,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
  * @author deka
  */
 public class PlayerQuitListener implements Listener {
-    
-  private final TNTTag plugin;
+    private final TNTTag plugin;
     
     public PlayerQuitListener(TNTTag plugin) {
-		  this.plugin = plugin;
+		    this.plugin = plugin;
     }
     
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-      plugin.getArenaManager().removePlayer(event.getPlayer());
-    }
-    
+        plugin.getArenaManager().removePlayer(event.getPlayer());
+    } 
 }

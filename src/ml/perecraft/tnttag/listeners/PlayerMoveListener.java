@@ -8,7 +8,6 @@ package ml.perecraft.tnttag.listeners;
 import ml.perecraft.tnttag.TNTTag;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.WorldBorder;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -20,11 +19,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 public class PlayerMoveListener implements Listener {
     
     private final TNTTag plugin;
-    private final Boolean forcedBorder;
     
     public PlayerMoveListener(TNTTag plugin) {
 		this.plugin = plugin;
-        this.forcedBorder = plugin.getConfig().getBoolean("world-options.force-border");
     }
     
     @EventHandler
@@ -33,19 +30,12 @@ public class PlayerMoveListener implements Listener {
             Location to = event.getTo();
             
             if (to == null) return;
-            if (forcedBorder && isOutsideOfBorder(to)) {
+
+            boolean forcedBorder = plugin.getConfig().getBoolean("world-options.force-border");
+
+            if (forcedBorder && plugin.getUtils().isOutsideOfBorder(to)) {
                 event.setTo(event.getFrom());
             }
         }
     }
-    
-    public boolean isOutsideOfBorder(Location loc) {
-        WorldBorder border = loc.getWorld().getWorldBorder();
-        double size = border.getSize()/2;
-        Location center = border.getCenter();
-        double x = loc.getX() - center.getX(), z = loc.getZ() - center.getZ();
-        
-        return ((x > size || (-x) > size) || (z > size || (-z) > size));
-    }
-    
 }

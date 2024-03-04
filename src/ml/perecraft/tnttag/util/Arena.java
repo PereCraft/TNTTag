@@ -25,7 +25,6 @@ public class Arena {
     private ScoreboardManager boardManager;
     private Scoreboard board;
     private Objective objective;
-    private String boardFooter;
     private String name;
     private Location lobbyLocation;
     private Location startLocation;
@@ -152,10 +151,6 @@ public class Arena {
     
     public void setSeconds(int seconds) {
         this.seconds = seconds;
-    }
-    
-    public void setBoardFooter(String boardFooter) {
-        this.boardFooter = boardFooter;
     }
     
     public void setBoard(Player player, int time) {
