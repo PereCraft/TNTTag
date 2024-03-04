@@ -25,7 +25,6 @@ import ml.perecraft.tnttag.managers.PlayerDataManager;
 import ml.perecraft.tnttag.managers.SignsManager;
 import ml.perecraft.tnttag.tools.ArenaSetupTools;
 import ml.perecraft.tnttag.tools.JoinTools;
-import ml.perecraft.tnttag.tools.TitleSender;
 import ml.perecraft.tnttag.util.Utils;
 
 import org.bukkit.plugin.PluginManager;
@@ -47,7 +46,6 @@ public class TNTTag extends JavaPlugin {
     private ArenaSetupTools arenaSetupTools;
     private GameData gameData;
     private PlayerData playerData;
-    private TitleSender titleSender;
     private Utils utils;
     
     @Override
@@ -62,7 +60,6 @@ public class TNTTag extends JavaPlugin {
         signsManager = new SignsManager(this);
         joinTools = new JoinTools(this);
         arenaSetupTools = new ArenaSetupTools(this);
-        titleSender = new TitleSender(this);
         utils = new Utils(this);
         
         saveDefaultConfig();
@@ -134,10 +131,6 @@ public class TNTTag extends JavaPlugin {
     
     public PlayerData getPlayerData() {
         return playerData;
-    }
-    
-    public TitleSender getTitleSender() {
-        return titleSender;
     }
 
     public Utils getUtils() {

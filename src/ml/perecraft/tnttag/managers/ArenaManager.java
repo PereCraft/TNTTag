@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.logging.Level;
 import ml.perecraft.tnttag.TNTTag;
-import ml.perecraft.tnttag.tools.TitleSender;
 import ml.perecraft.tnttag.util.Arena;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -65,7 +64,6 @@ public class ArenaManager {
         };
 
         int countdown = plugin.getConfig().getInt("countdown");
-        TitleSender ts = plugin.getTitleSender();
         
         if (plugin.getConfig().getBoolean("send-arenajoin-msg")) {
             player.sendMessage(plugin.getConfig().getString("messages.arenajoin").replaceAll("&", "§"));
@@ -80,7 +78,7 @@ public class ArenaManager {
         player.setGameMode(GameMode.ADVENTURE);
         arena.setBoard(player, countdown);
         arena.sendMessage(player.getDisplayName() + "§7 entra nell'arena.");
-        ts.sendTitle(player, "§8[§6TNTTag§8]", "§7Arena: §e" + arena.getName(), 5, 40, 5);
+        plugin.getUtils().sendTitle(player, "§8[§6TNTTag§8]", "§7Arena: §e" + arena.getName(), 5, 40, 5);
         
         if (arena.getAlivePlayers().size() >= arena.getMinPlayers() && !arena.isRunningCountdown()) {
             plugin.getCountdownManager().startCountdown(arena, countdown);

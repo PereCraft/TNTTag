@@ -146,7 +146,7 @@ public class CountdownManager {
             }
         } else if (seconds <= 5) {
             for (UUID playerID : arena.getPlayers()) {
-                plugin.getTitleSender().sendTitle(Bukkit.getPlayer(playerID), "§6" + seconds, "§7all'esplosione", 1, 20, 1);
+                plugin.getUtils().sendTitle(Bukkit.getPlayer(playerID), "§6" + seconds, "§7all'esplosione", 1, 20, 1);
             }
             
             arena.setSeconds(seconds - 1);
