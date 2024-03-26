@@ -136,7 +136,7 @@ public class CountdownManager {
             if (arena.getAlivePlayers().size() == 1) {
                 Bukkit.getScheduler().runTaskLater(plugin, () -> endGame(arena), 20L);
                 
-            } else if (arena.getAlivePlayers().size() == 2 && !arena.getTntPlayers().isEmpty()) {
+            } else if (arena.getAlivePlayers().size() == 2 && !arena.getTNTPlayers().isEmpty()) {
                 blowUpTNTs(arena);
                 Bukkit.getScheduler().runTaskLater(plugin, () -> endGame(arena), 20L);
                 
@@ -181,7 +181,7 @@ public class CountdownManager {
         
         arena.getPlayers().clear();
         arena.getAlivePlayers().clear();
-        arena.getTntPlayers().clear();
+        arena.getTNTPlayers().clear();
         arena.setInGame(Boolean.FALSE);
         arena.setRunningCountdown(Boolean.FALSE);
         plugin.getLogger().log(Level.INFO, "Arena {0} terminata", arena.getName());
@@ -232,12 +232,12 @@ public class CountdownManager {
         int randomInt = random.nextInt(players.length);
         Player randomPlayer = Bukkit.getPlayer(players[randomInt]);
         
-        plugin.getArenaManager().addTNTPlayer(randomPlayer, arena);
+        plugin.getArenaManager().giveBomb(randomPlayer, arena);
         randomPlayer.sendMessage("§cHai ricevuto una TNT. Buona fortuna!");
     }
     
     public void blowUpTNTs(Arena arena) {
-        for (UUID playerID : arena.getTntPlayers()) {
+        for (UUID playerID : arena.getTNTPlayers()) {
             Player player = Bukkit.getPlayer(playerID);
             
             player.getWorld().playSound(player.getLocation(), Sound.EXPLODE, 0.7F, 0.7F);
@@ -251,7 +251,7 @@ public class CountdownManager {
             player.setGameMode(GameMode.SPECTATOR);
             player.sendMessage("§7Sei in modalità spettatore. Digita §e/leave §7per uscire.");
         }
-        arena.getTntPlayers().clear();
+        arena.getTNTPlayers().clear();
     }
     
     public void cancelTask(Arena arena) {

@@ -18,10 +18,10 @@ public class ArenaSetupTools {
     
     private final TNTTag plugin;
     
-    private static HashMap<Player, String> tempArenas = new HashMap<>();
-    private static HashMap<Player, Location> tempLobbyLocation = new HashMap<>();
-    private static HashMap<Player, Location> tempStartLocation = new HashMap<>();
-    private static HashMap<Player, Location> tempSpectLocation = new HashMap<>();
+    private HashMap<Player, String> tempArenas = new HashMap<>();
+    private HashMap<Player, Location> tempLobbyLocation = new HashMap<>();
+    private HashMap<Player, Location> tempStartLocation = new HashMap<>();
+    private HashMap<Player, Location> tempSpectLocation = new HashMap<>();
 
     public ArenaSetupTools(TNTTag plugin) {
 		this.plugin = plugin;

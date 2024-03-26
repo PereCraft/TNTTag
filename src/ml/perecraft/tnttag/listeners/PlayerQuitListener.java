@@ -18,7 +18,7 @@ public class PlayerQuitListener implements Listener {
     private final TNTTag plugin;
     
     public PlayerQuitListener(TNTTag plugin) {
-		    this.plugin = plugin;
+		this.plugin = plugin;
     }
     
     @EventHandler

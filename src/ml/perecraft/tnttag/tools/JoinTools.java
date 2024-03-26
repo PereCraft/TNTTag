@@ -6,6 +6,7 @@
 package ml.perecraft.tnttag.tools;
 
 import ml.perecraft.tnttag.TNTTag;
+import ml.perecraft.tnttag.managers.ArenaManager;
 import ml.perecraft.tnttag.util.Arena;
 import org.bukkit.entity.Player;
 
@@ -30,13 +31,14 @@ public class JoinTools {
             player.sendMessage("§cNon puoi entrare in una partita adesso.");
             return;
         }
+
+        ArenaManager arenaManager = plugin.getArenaManager();
+        Arena arena = arenaManager.getArena(arenaName);
         
-        if (plugin.getArenaManager().getArenaFromPlayer(player) != null) {
+        if (arenaManager.getArenaFromPlayer(player) != null) {
             player.sendMessage("§cSei già in una arena.");
             return;
         }
-        
-        Arena arena = plugin.getArenaManager().getArena(arenaName);
         
         if (arena == null) {
             player.sendMessage("§cArena non trovata.");
@@ -63,7 +65,7 @@ public class JoinTools {
             return;
         }
         
-        plugin.getArenaManager().addPlayer(player, arena);
+        arenaManager.addPlayer(player, arena);
     }
     
     public void autoJoin(Player player) {
@@ -76,31 +78,19 @@ public class JoinTools {
             return;
         }
         
-        Arena actualArena = plugin.getArenaManager().getArenaFromPlayer(player);
+        ArenaManager arenaManager = plugin.getArenaManager();
+        Arena autoArena = arenaManager.getAvailableArena();
         
-        if (actualArena != null) {
+        if (arenaManager.getArenaFromPlayer(player) != null) {
             player.sendMessage("§cSei già in una arena.");
             return;
         }
-        
-        Arena autoArena = getAutoArena();
         
         if (autoArena == null) {
             player.sendMessage("§cNon ci sono arene disponibili.");
             return;
         }
         
-        plugin.getArenaManager().addPlayer(player, autoArena);
+        arenaManager.addPlayer(player, autoArena);
     }
-    
-    public Arena getAutoArena() {
-        for (Arena arena : plugin.getArenaManager().getArenas()) {
-            if (plugin.getArenaManager().isArenaAvailable(arena)) {
-                return arena;
-            }
-        }
-        
-        return null;
-    }
-    
 }

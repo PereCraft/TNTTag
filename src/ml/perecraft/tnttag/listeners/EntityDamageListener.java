@@ -7,6 +7,7 @@ package ml.perecraft.tnttag.listeners;
 
 import java.util.logging.Level;
 import ml.perecraft.tnttag.TNTTag;
+import ml.perecraft.tnttag.managers.ArenaManager;
 import ml.perecraft.tnttag.util.Arena;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -47,7 +48,9 @@ public class EntityDamageListener implements Listener {
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             Player victim = (Player) event.getEntity();
             Player damager = (Player) event.getDamager();
-            Arena arena = plugin.getArenaManager().getArenaFromPlayer(victim);
+            
+            ArenaManager arenaManager = plugin.getArenaManager();
+            Arena arena = arenaManager.getArenaFromPlayer(victim);
             
             if (arena == null) return;
             
@@ -56,9 +59,9 @@ public class EntityDamageListener implements Listener {
                 return;
             }
             
-            if (arena.getTntPlayers().contains(damager.getUniqueId())) {
-                plugin.getArenaManager().removeTNTPlayer(damager, arena);
-                plugin.getArenaManager().addTNTPlayer(victim, arena);
+            if (arena.getTNTPlayers().contains(damager.getUniqueId())) {
+                arenaManager.removeBomb(damager, arena);
+                arenaManager.giveBomb(victim, arena);
             }
             
             victim.setHealth(20.0D);

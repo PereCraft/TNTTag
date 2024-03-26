@@ -103,7 +103,7 @@ public class Arena {
         return this.players;
     }
     
-    public ArrayList<UUID> getTntPlayers() {
+    public ArrayList<UUID> getTNTPlayers() {
         return this.tntPlayers;
     }
     

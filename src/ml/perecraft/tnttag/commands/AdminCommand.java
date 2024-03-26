@@ -119,11 +119,7 @@ public class AdminCommand implements CommandExecutor {
                 
                 if (args[1].equalsIgnoreCase("game")) {
                     cs.sendMessage("§cDisattivazione e unload delle arene...");
-                    
-                    for (Arena arena : plugin.getArenaManager().getArenas()) {
-                        plugin.getArenaManager().unloadArena(arena);
-                    }
-                    
+                    plugin.getArenaManager().unloadArenas();
                     cs.sendMessage("§cCancellazione GameData...");
                     plugin.getGameData().clearData();
                     cs.sendMessage("§cTutti i dati relativi alle arene sono stati cancellati.");

@@ -76,7 +76,7 @@ public class TNTTag extends JavaPlugin {
     
     @Override
     public void onDisable() {
-        arenaManager.stopGames();
+        arenaManager.unloadArenas();
     }
     
     public void reloadPlugin() {

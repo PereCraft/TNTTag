@@ -1,5 +1,7 @@
 package ml.perecraft.tnttag.util;
 
+import java.util.logging.Level;
+
 import org.bukkit.Location;
 import org.bukkit.WorldBorder;
 import org.bukkit.command.CommandSender;
@@ -28,6 +30,16 @@ public class Utils {
         double x = loc.getX() - center.getX(), z = loc.getZ() - center.getZ();
         
         return ((x > size || (-x) > size) || (z > size || (-z) > size));
+    }
+
+    public Location parseLocation(Object rawLoc) {
+        try {
+            return (Location) rawLoc;
+        } catch (ClassCastException e) {
+            plugin.getLogger().log(Level.SEVERE, "Unable to parse location: " + rawLoc.toString());
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public void sendNoPermissionMessage(CommandSender cs) {
